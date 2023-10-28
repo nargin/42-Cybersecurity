@@ -70,7 +70,6 @@ int	main(void)
 		local_14 = local_14 + 1;
 	}
 	local_29[local_14] = '\0';
-	printf("%s\n", local_29);
 	local_18 = strcmp(local_29,"********");
 	if (local_18 == -2) {
 		___syscall_malloc();

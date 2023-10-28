@@ -1,13 +1,13 @@
 all :
-	gcc -o level1 source.c
+	gcc -o level3 source.c
 
 bonus :
 	gcc -c patch.c -o patch.o
 	ar rcs libpatch.a patch.o
-	gcc -o level1 source.c -L. -lpatch
+	gcc -o level3 source.c -L. -lpatch
 
 clean :
-	rm -f level1
+	rm -f level3
 	rm -f patch.o
 	rm -f libpatch.a
 
