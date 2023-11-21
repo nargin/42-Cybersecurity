@@ -1,7 +1,18 @@
 all :
-	gcc -Wall -Werror -Wextra stockholm.c -lsodium -o stockholm
+	gcc -Wall -Werror -Wextra stockholm.c options.c parsing.c -I ./ -lsodium -o stockholm
 
-clean :
+confirm:
+	@echo "\033[1;31mYou will delete key.cript in the process\033[0m"
+	@echo "This action requires confirmation"
+	@read -p "Are you sure you want to proceed? [y/N] " answer; \
+	if [ "$$answer" != "y" ]; then \
+		echo "Aborted"; \
+		exit 1; \
+	fi
+	@echo "\033[1;32mProceeding...\033[0m"
+
+
+clean : confirm
 	rm -f stockholm
 	rm -f *.o
 	rm -f key.cript
