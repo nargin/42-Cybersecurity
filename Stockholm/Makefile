@@ -1,5 +1,5 @@
 all :
-	gcc stockholm.c -lsodium -o stockholm
+	gcc -Wall -Werror -Wextra stockholm.c -lsodium -o stockholm
 
 clean :
 	rm -f stockholm
