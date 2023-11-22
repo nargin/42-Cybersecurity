@@ -10,24 +10,26 @@ void	help(void)
 	printf("%s", HELP);
 }
 
-int	optionprog(char *option, int argc)
+void	optionprog(char *option)
 {
-	int noarg = argc == 2;
-	if ((strcmp("-h", option) == 0 || strcmp("--help", option) == 0) && noarg)
-	{
+	if (strcmp("-h", option) == 0 || strcmp("--help", option) == 0)
 		help();
-		return (0);
-	}
 	
-	if ((strcmp("-v", option) == 0 || strcmp("--version", option) == 0) && noarg)
-	{
+	else if (strcmp("-v", option) == 0 || strcmp("--version", option) == 0)
 		version();
-		return (0);
+	
+	else if (strcmp("-r", option) == 0 || strcmp("--reverse", option) == 0)
+		reverse = 1;
+
+	else if (strcmp("-s", option) == 0 || strcmp("--silent", option) == 0)
+		silent = 1;
+
+	else if (strcmp("-rs", option) == 0 || strcmp("-sr", option) == 0 || strcmp("--reverse-silent", option) == 0 || strcmp("--silent-reverse", option) == 0)
+	{
+		reverse = 1;
+		silent = 1;
 	}
-	
-	if ((strcmp("-r", option) == 0 || strcmp("--reverse", option) == 0) && !noarg)
-		return (1);
-	
-	printf("%s", DEFAULT_HELP);	
-	return (0);
+
+	else
+		printf("%s", DEFAULT_HELP);
 }

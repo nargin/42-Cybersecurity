@@ -12,7 +12,7 @@
 
 #define TEST 1
 
-#define STOCKHOLM_VERSION "0.6"
+#define STOCKHOLM_VERSION "0.3"
 #define DEFAULT_HELP "Usage : ./stockholm [OPTION]\nTry -h or --help for details :>\n"
 #define HELP "Usage : ./stockholm [OPTION]\n\n\
 Options :\n\t\
@@ -44,6 +44,5 @@ void	clearlist(struct linkedFile **toclear);
 void	addback_node(struct linkedFile **node, char filename[256]);
 void	encrypt(struct linkedFile *list, struct cryptFile data);
 void	decrypt(struct linkedFile *list);
-int		filelen(char *filename);
 
 #endif

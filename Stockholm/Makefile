@@ -1,5 +1,6 @@
 all :
-	gcc -Wall -Werror -Wextra stockholm.c options.c parsing.c -I ./ -lsodium -o stockholm
+	@gcc -Wall -Werror -Wextra stockholm.c encrypt.c decrypt.c options.c parsing.c -I ./ -lsodium -o stockholm
+	@echo "\033[1;32mStockholm is ready to use\033[0m"
 
 confirm:
 	@echo "\033[1;31mYou will delete key.crypt in the process\033[0m"
@@ -13,10 +14,10 @@ confirm:
 
 
 clean : confirm
-	rm -f stockholm
-	rm -f *.o
-	rm -f key.crypt
-	rm -rf crypted
+	@rm -f stockholm
+	@rm -f *.o
+	@rm -f key.crypt
+	@rm -rf crypted
 
 fclean : clean
 
