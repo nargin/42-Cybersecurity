@@ -2,7 +2,7 @@ all :
 	gcc -Wall -Werror -Wextra stockholm.c options.c parsing.c -I ./ -lsodium -o stockholm
 
 confirm:
-	@echo "\033[1;31mYou will delete key.cript in the process\033[0m"
+	@echo "\033[1;31mYou will delete key.crypt in the process\033[0m"
 	@echo "This action requires confirmation"
 	@read -p "Are you sure you want to proceed? [y/N] " answer; \
 	if [ "$$answer" != "y" ]; then \
@@ -15,7 +15,8 @@ confirm:
 clean : confirm
 	rm -f stockholm
 	rm -f *.o
-	rm -f key.cript
+	rm -f key.crypt
+	rm -rf crypted
 
 fclean : clean
 
