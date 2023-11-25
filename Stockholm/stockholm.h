@@ -33,8 +33,8 @@ struct linkedFile{
 };
 
 struct cryptFile{
-	unsigned char key[crypto_secretbox_KEYBYTES];
-	unsigned char nonce[crypto_secretbox_NONCEBYTES];
+	unsigned char *key;
+	unsigned char *nonce;
 };
 
 void	optionprog(char *option);

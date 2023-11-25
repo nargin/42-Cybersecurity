@@ -6,25 +6,48 @@ int	silent = 0;
 void	writeKey(struct cryptFile *data)
 {
 	unsigned int key_size = crypto_secretbox_KEYBYTES;  
-	unsigned char key[key_size];
-	unsigned char nonce[crypto_secretbox_NONCEBYTES];
-	randombytes_buf(nonce, sizeof(nonce));
-	crypto_secretbox_keygen(key);
+	
+	(*data).key = malloc(key_size + 1);
+	(*data).nonce = malloc(crypto_secretbox_NONCEBYTES + 1);
 
-	memcpy((*data).key, key, sizeof(key));
-	memcpy((*data).nonce, nonce, sizeof(nonce)); 
+	bzero((*data).key, key_size + 1);
+	bzero((*data).nonce, crypto_secretbox_NONCEBYTES + 1);
+
+	randombytes_buf((*data).nonce, sizeof((*data).nonce));
+	crypto_secretbox_keygen((*data).key);
+
+
+	// printf("key : ");
+	// for (unsigned int i = 0; i < key_size; i++)
+	// 	printf("%02x", (*data).key[i]);
+	// printf("\n");
+
+	// printf("nonce : ");
+	// for (unsigned int i = 0; i < crypto_secretbox_NONCEBYTES; i++)
+	// 	printf("%02x", (*data).nonce[i]);
+	// printf("\n");
+
+	printf("%s\n", (*data).key);
+	printf("%s\n", (*data).nonce);
 
 	FILE *fp = fopen("key.crypt", "wb");
-
 	if (fp == NULL)
 	{
 		printf("Error: fopen() failed\n");
 		return ;
 	}
-	fwrite("key : ", sizeof(unsigned char), 6, fp);
-	fwrite(key, sizeof(unsigned char), key_size, fp);
-	fwrite("\nnonce : ", sizeof(unsigned char), 9, fp);
-	fwrite(nonce, sizeof(unsigned char), crypto_secretbox_NONCEBYTES, fp);
+	
+	fwrite((*data).key, key_size, 1, fp);
+	fclose(fp);
+
+	fp = fopen("nonce.crypt", "wb");
+	if (fp == NULL)
+	{
+		printf("Error: fopen() failed\n");
+		return ;
+	}
+
+	fwrite((*data).nonce, crypto_secretbox_NONCEBYTES, 1, fp);
 	fclose(fp);
 }
 
@@ -56,7 +79,7 @@ int		main(int argc, char *argv[], char *env[])
 	struct cryptFile data;
 	if (reverse == 0)
 	{
-		writeKey(&data); // write key encrypt in key.crypt "."
+		writeKey(&data); // write key and nonce in key.crypt and nonce.crypt
 		printf("%s\n", FILE_DELETED);
 	}
 

@@ -31,81 +31,91 @@ void	newext(struct linkedFile **list)
 	(*list) = fnode;
 }
 
-struct cryptFile	readKey(void)
+void	readKey(struct cryptFile *data)
 {
-	struct cryptFile	data;
-	memset(data.key, 0, sizeof(data.key));
-	memset(data.nonce, 0, sizeof(data.nonce));
-	// use fseek to get the size of the file
 	FILE	*fp = fopen("key.crypt", "rb");
 	if (fp == NULL)
 	{
-		printf("Error: fopen() failed\n");
+		fprintf(stderr, "Error: fopen() failed\n");
 		exit(1);
 	}
-	int		flen = filelen("key.crypt");
-	if (flen == -1)
-	{
-		printf("Error: key.cript not found that can cause troubles... :x\n");
-		exit(1);
-	}
-	char	*buffer = malloc(flen + 1);
+	
+	(*data).key = malloc(crypto_secretbox_KEYBYTES + 1);
+	(*data).nonce = malloc(crypto_secretbox_NONCEBYTES + 1);
 
-	fread(buffer, sizeof(char), flen, fp);
-	buffer[flen] = 0;
+	bzero((*data).key, crypto_secretbox_KEYBYTES + 1);
+	bzero((*data).nonce, crypto_secretbox_NONCEBYTES + 1);
+
+	if ((*data).key == NULL || (*data).nonce == NULL)
+	{
+		fprintf(stderr, "Allocation memory failed :<\n");
+		exit(1);
+	}
+
+	for (unsigned int i = 0; i < crypto_secretbox_KEYBYTES; i++)
+		(*data).key[i] = fgetc(fp);
 	fclose(fp);
 
-	printf("%s\n\n", buffer);
-	int		i = 6;
-	char	*occ = strstr(buffer, "nonce");
-	int		occ_index = occ - buffer;
-	int 	j = 0;
-	while (i < occ_index - 1 && buffer[i] != '\n')
-		data.key[j++] = buffer[i++];
-	data.key[j] = 0;
-	i += 9;
-	j = 0;
-	while (i < flen - 1)
-		data.nonce[j++] = buffer[i++];
-	data.nonce[j] = 0;
-	free(buffer);
-	return (data);
+	fp = fopen("nonce.crypt", "rb");
+	if (fp == NULL)
+	{
+		printf("Error: fopen() failed\n");
+		return ;
+	}
+	for (unsigned int i = 0; i < crypto_secretbox_NONCEBYTES; i++)
+		(*data).nonce[i] = fgetc(fp);
+	fclose(fp);
 }
 
 void	decrypt(struct linkedFile *list)
 {
-	(void)list;
-	struct cryptFile	data = readKey();
-	printf("key : %s\n", data.key);
-	printf("nonce : %s\n", data.nonce);
+	struct cryptFile	data;
+
+	readKey(&data);
 	newext(&list);
+
+	printf("%s\n", data.key);
+	printf("%s\n", data.nonce);
 
 	// for (struct linkedFile *tmp = list; tmp; tmp = tmp->next)
 	// 	printf("name : %s\n", tmp->file);
 	
 	if (TEST)
 		chdir("crypted");
-	// while (list)
-	// {
-	// 	char	*file = list->file;
-	// 	int		file_size = filelen(file);
-	// 	char	*buffer = malloc(file_size * sizeof(char));
-	// 	if (!buffer)
-	// 		exit(1);
-	// 	FILE	*fp = fopen(file, "rb");
-	// 	if (fp == NULL)
-	// 	{
-	// 		printf("Error: fopen() failed\n");
-	// 		return ;
-	// 	}
-	// 	fread(buffer, sizeof(char), file_size, fp);
-	// 	fclose(fp);
-	// 	buffer[file_size] = 0;
-	// 	unsigned char	*decrypted = malloc(file_size * sizeof(char));
-	// 	if (!decrypted)
-	// 		exit(1);
+	list = list->next;
 
+	while (list)
+	{
+		FILE *fp = fopen(list->file, "rb");
+		if (fp == NULL)
+		{
+			fprintf(stderr, "%s can't be open !\n", list->file);
+			exit(1);
+		}
+		
+		fseek(fp, 0, SEEK_END);
+		long	flen = ftell(fp);
+		fseek(fp, 0, SEEK_SET);
 
-	// 	list = list->next;		
-	// }
+		printf("%ld\n", flen);
+
+		unsigned char	decrypted[flen + 1];
+
+		// if (crypto_secretbox_open_easy(decrypted, 
+		// {
+		// 	fprintf(stderr, "%s file : Decryption failed\n", list->file);
+		// 	exit(1);
+		// }
+		if (silent == 0)
+			printf("\033[1;35mFile %s is now decrypted !\033[0m\n", list->file);
+		fp = fopen(list->file, "wb");
+		if (fp == NULL)
+		{
+			fprintf(stderr, "%s can't be open !\n", list->file);
+			exit(1);
+		}
+		fwrite(decrypted, sizeof(char), flen, fp);
+		fclose(fp);
+		list = list->next;
+	}
 }

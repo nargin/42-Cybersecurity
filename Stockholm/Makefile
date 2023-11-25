@@ -17,6 +17,7 @@ clean : confirm
 	@rm -f stockholm
 	@rm -f *.o
 	@rm -f key.crypt
+	@rm -f nonce.crypt
 	@rm -rf crypted
 
 fclean : clean
