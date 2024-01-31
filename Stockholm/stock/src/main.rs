@@ -1,8 +1,8 @@
 use std::env;
-use std::path::Path;
-use std::fs::File;
-use std::io::Write;
 use rand::{rngs::OsRng, RngCore};
+
+mod init_folder;
+use init_folder::init_folder_and_key_files;
 
 fn options_parser(args: Vec<String>, _options: &mut String) {
 	for s in args {
@@ -26,18 +26,14 @@ fn main() -> std::io::Result<()> {
 	
 	OsRng.fill_bytes(&mut key);
 	OsRng.fill_bytes(&mut nonce);
-	
-	let folder_key_path = "~/42-Cybersecurity/Stockholm/stock/key";
-	let path = Path::new(folder_key_path);
 
-	if path.is_dir() {
-		
-		let mut file = File::create("key.cript")?;
-		file.write_all(&key)?;
-		
-		file = File::create("nonce.cript")?;
-		file.write_all(&nonce)?;
-	}
+	match init_folder_and_key_files(key, nonce) {
+		Ok(g) => println!("Init: {}", g),
+		Err(e) => {
+			eprintln!("Error occured: {}", e);
+			std::process::exit(127);
+		},
+	};
 
 	Ok(())
 }
