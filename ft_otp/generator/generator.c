@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
+#include <time.h>
 
 const char HEX_CHAR[] = "0123456789ABCDEF";
 enum OutputDisplay {
@@ -9,8 +11,9 @@ enum OutputDisplay {
 
 char *generate_key(int size) {
 	char *key = malloc(size * sizeof(char) + 1);
+	srand(time(NULL) ^ (getpid() << 16)); // Seed with time and pid
 	for (int i = 0; i < size; i++) {
-		key[i] = HEX_CHAR[rand() % 16];
+		key[i] = HEX_CHAR[rand() % 16]; 
 	}
 	key[size] = 0;
 	return key;
@@ -50,8 +53,8 @@ void	argument_parser(int ac, char *av[], int *size, enum OutputDisplay *display)
 					exit(0);
 				case 'n':
 					if (i + 1 >= ac) {
-						printf("Missing argument for -n\n");
-						exit(1);
+						*size = 64;
+						break;
 					}
 					*size = atoi(av[++i]);
 					break;

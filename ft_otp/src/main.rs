@@ -1,8 +1,8 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::env;
-use std::io::{Write};
+use std::io::{Write, Read};
 use log::{error, debug};
-
+use std::fs::File;
 
 const ARGS_ERROR: &str = "Usage: ./ft_otp [Option] [File]\n\
 Try './ft_otp --help or -h' for more information.\n";
@@ -12,6 +12,13 @@ Options:\n\
 \t-g, --generate	Generate a new key and store it in \"ft_otp.key\" (encrypted).\n\
 \t-k, --key	Generate a OTP using the key stored in \"ft_otp.key\".\n\
 \t--help, -h	Display this help and exit.\n";
+
+fn hotp(key: &str, timestamp: &str) -> u32 {
+	let key = key.as_bytes();
+	let timestamp = timestamp.as_bytes();
+
+	return 123456;
+}
 
 fn	arguments_check(args: &Vec<String>) {
 	if args.len() > 1 && (args[1] == "--help" || args[1] == "-h") {
@@ -70,4 +77,10 @@ fn main() {
 	println!("Since the epoch: {:?}", since_the_epoch);
 	let timestamp = since_the_epoch.as_secs();
 	println!("Timestamp: {}", timestamp);
+	let timestamp = timestamp.to_string();
+	let mut key = File::open("ft_otp.key").expect("Unable to open file");
+	let mut hex_key = String::new();
+	key.read_to_string(&mut hex_key).expect("Unable to read data");
+	hex_key = hex_key.trim().to_string();
+	println!("Key: {}", hex_key);
 }
