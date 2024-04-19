@@ -35,14 +35,21 @@ fn generate_encoded_key(input: &str) {
 			input.to_string()
 		},
 	};
-
-	let encoded_key = encode(Alphabet::RFC4226 { padding: false }, input_string.as_bytes());
-	let mut file = std::fs::File::create("ft_otp.key").expect("Unable to create file");
-	file.write_all(encoded_key.as_bytes()).expect("Unable to write data");
-	debug!("Key (base32): {}", encoded_key);
-	debug!("Key stored in \"ft_otp.key\"");
+	println!("Hex secret: {}", input_string);
+	let secret_key = input_string.as_bytes();
+	println!("Length: {}", secret_key.len());
+	let encoded_key = encode(Alphabet::RFC4648 { padding: true }, secret_key);
+	println!("Key (base32): {}", encoded_key);
+	// let res = generate_hotp(b"FVNEOSGW3MDAJHOEFJCH4BJGSQ77QYYDVXVD53F2DVKSYMQWTOWA====", 0);
+	// println!("OTP: {}", res);
+	// let mut file = std::fs::File::create("ft_otp.key").expect("Unable to create file");
+	// file.write_all(encoded_key.as_bytes()).expect("Unable to write data");
+	// debug!("Key (base32): {}", encoded_key);
+	// debug!("Key stored in \"ft_otp.key\"");
 
 }
+
+HE3TQRSGIQ4UKMZQIJDDSRKGIYYUKRCBGYYTSQJXGFBUIRKFIY3TKNZWGQ2EMMRXIZCDMOCDGU3UIMZVG44TMMBUIUZDAQRQIVATONA=
 
 fn generate_hotp(secret_key: &[u8], counter: u64) -> String {
 	let counter_bytes = counter.to_be_bytes();
@@ -50,7 +57,7 @@ fn generate_hotp(secret_key: &[u8], counter: u64) -> String {
 	let tag = hmac::sign(&key, &counter_bytes);
 
 	let tag_bytes = tag.as_ref();
-	let offset = (tag_bytes[tag_bytes.len() - 1] & 0xf) as usize;
+	let offset = (tag_bytes[tag_bytes.len() - 1] & 0x0f) as usize;
 	let binary = ((tag_bytes[offset] as u32 & 0x7f) << 24) |
 		((tag_bytes[offset + 1] as u32) << 16) |
 		((tag_bytes[offset + 2] as u32) << 8) |
@@ -62,7 +69,7 @@ fn generate_hotp(secret_key: &[u8], counter: u64) -> String {
 
 fn generate_totp(input: &str) {
 	let content = std::fs::read_to_string(input).expect("Unable to read file");
-	let secret_key = decode(Alphabet::RFC4648 { padding: false }, content.as_str()).expect("Unable to decode key");
+	let secret_key = base32::decode(Alphabet::RFC4648 { padding: false }, content.as_str()).expect("Unable to decode key");
 	let time = SystemTime::now().duration_since(UNIX_EPOCH).expect("Unable to get time").as_secs();
 	let counter = time / 30;
 	let otp = generate_hotp(&secret_key, counter);
@@ -147,9 +154,7 @@ fn main() {
 	env_logger::init();
 	// let _option = arguments_check(&args);
 
-	generate_encoded_key("12345678901234567890");
-	let res = generate_hotp(b"12345678901234567890", 0);
-	println!("OTP: {}", res);
+	generate_encoded_key("hex.key");
 
 	// match option {
 	// 	Option::Generate => {

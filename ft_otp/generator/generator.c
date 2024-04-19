@@ -10,13 +10,29 @@ enum OutputDisplay {
 };
 
 char *generate_key(int size) {
-	char *key = malloc(size * sizeof(char) + 1);
+	char *key = malloc(size + 1);
 	srand(time(NULL) ^ (getpid() << 16)); // Seed with time and pid
 	for (int i = 0; i < size; i++) {
 		key[i] = HEX_CHAR[rand() % 16]; 
 	}
-	key[size] = 0;
+	key[size] = '\0';
 	return key;
+}
+
+void delete_last_char(const char *filename) {
+	FILE *file = fopen(filename, "r+");
+
+	if (file == NULL) {
+		printf("Error opening file!\n");
+		exit(1);
+	}
+
+	fseek(file, -1, SEEK_END); // Move the file pointer to the second last character
+	int fd = fileno(file); // Get the file descriptor
+	off_t current_pos = ftell(file); // Get the current position
+	ftruncate(fd, current_pos); // Truncate the file at the current position
+
+	fclose(file);
 }
 
 int	file_output(int size) {
@@ -29,7 +45,7 @@ int	file_output(int size) {
 	
 	const char *key = generate_key(size);
 
-	fprintf(file, "%s", key);
+	write(fileno(file), key, size);
 	fclose(file);
 	return 0;
 }
