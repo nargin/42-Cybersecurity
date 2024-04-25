@@ -20,7 +20,7 @@ def generate_password(key: str):
 		f.write(base32_key)
 	print("Password generated in ft_otp.key")
 
-def generate_key():
+def generate_key(qrcode=False):
 	if not os.path.exists('ft_otp.key'):
 		exit("No key found")
 	with open('ft_otp.key', 'rb') as f:
@@ -29,6 +29,12 @@ def generate_key():
 		timestamp = int(time.time() / 30)
 		totp = hotp.at(timestamp)
 		print(totp)
+
+		if qrcode:
+			import qrcode
+			img=qrcode.make(str(totp))
+			img.save('ft_otp.png')
+			print("QR code generated in ft_otp.png")
 
 def in_venv():
 	if os.getenv('VIRTUAL_ENV') is None:
@@ -39,12 +45,13 @@ def main():
 	parser = argparse.ArgumentParser(description='OTP generator')
 	parser.add_argument('-g', '--generate', type=str, help='Generate a new key')
 	parser.add_argument('-k', '--key', help='Generate a new password based on the key', action='store_true')
+	parser.add_argument('-qr', '--qrcode', help='Generate a QR code for the key', action='store_true')
 	args = parser.parse_args()
 
 	if args.generate:
 	    generate_password(args.generate)
 	elif args.key:
-		generate_key()
+		generate_key(args.qrcode)
 
 if __name__ == '__main__':
 	main()
