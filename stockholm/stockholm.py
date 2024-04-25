@@ -1,6 +1,6 @@
 import argparse
 import base64
-import os
+import os, sys
 from dotenv	import load_dotenv
 from cryptography.fernet import Fernet
 
@@ -31,6 +31,8 @@ class Stockholm:
 	def __init__(self, silent: bool = False):
 		self.silent = silent
 		self.secret_key = os.getenv('SECRET_KEY')
+		if self.secret_key is None:
+			exit('No secret key found in .env file')
 		self.key_base64 = base64.urlsafe_b64encode(self.secret_key.encode().ljust(32, b'\0'))
 		if not self.secret_key or not self.key_base64:
 			exit('No secret key found in .env file')
@@ -87,7 +89,12 @@ def cleanizer():
 
 	exit('Cleaned up the encrypted and decrypted files')
 
+def in_venv():
+	if os.getenv('VIRTUAL_ENV') is None:
+		exit('Please run the script in a virtual environment')
+
 def main():
+	in_venv()
 	load_dotenv()
 	parser = argparse.ArgumentParser(description='Encrypt and decrypt files')
 	parser.add_argument('-v', '--version', action='version', version='%(prog)s 1.0', help='Show program\'s version number and exit')
