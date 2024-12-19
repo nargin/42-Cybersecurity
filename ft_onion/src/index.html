@@ -1,23 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ft_onion</title>
+    <meta charset="UTF-8">
+    <title>Veigar's Dark Domain</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #0a0a1a;
+            color: #9d7cf4;
+        }
+
+        .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f0f0f0;
-        }
-        h1 {
-            color: #333;
             text-align: center;
+        }
+
+        h1 {
+            color: #c29eff;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px #6e3cff;
+            margin-bottom: 20px;
+        }
+
+        .evil-quote {
+            font-style: italic;
+            color: #ff9eee;
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+
+        .content-box {
+            background-color: rgba(30, 20, 50, 0.7);
+            border: 2px solid #6e3cff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 0 15px #6e3cff;
+        }
+
+        .veigar-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            margin: 20px auto;
+            border: 3px solid #6e3cff;
+            box-shadow: 0 0 20px #6e3cff;
+            object-fit: cover;
+        }
+
+        .abilities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .ability {
+            background-color: rgba(40, 30, 60, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #9d7cf4;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 0.8em;
+            color: #6e3cff;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to my Tor Hidden Service</h1>
-    <p>This page is hosted on the Tor network.</p>
+    <div class="container">
+        <h1>Welcome to Veigar's Dark Domain</h1>
+        
+        <div class="content-box">
+            <p class="evil-quote">"I am evil! Stop laughing!"</p>
+        </div>
+
+        <div class="content-box">
+            <h2>Master of Evil</h2>
+            <p>Behold the mighty Veigar, a tiny master of evil who wields immense magical power! 
+            Despite his small stature, he commands respect through his mastery of dark magic and 
+            his endless pursuit of power.</p>
+        </div>
+
+        <div class="abilities">
+            <div class="ability">
+                <h3>Baleful Strike</h3>
+                <p>Veigar's signature move, gaining AP with each strike!</p>
+            </div>
+            <div class="ability">
+                <h3>Dark Matter</h3>
+                <p>A devastating chunk of dark energy from above!</p>
+            </div>
+            <div class="ability">
+                <h3>Event Horizon</h3>
+                <p>The inescapable cage of dark magic!</p>
+            </div>
+            <div class="ability">
+                <h3>Primordial Burst</h3>
+                <p>The ultimate destructive force!</p>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2024 Veigar's Dark Domain | A 42 School ft_onion Project</p>
+        </footer>
+    </div>
 </body>
 </html>

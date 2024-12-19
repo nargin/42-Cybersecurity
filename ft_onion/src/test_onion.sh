@@ -4,6 +4,10 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+USERNAME="robin"
+
+echo "!!! TEST ONLY WORK IF SSH_USER (.env) IS '${USERNAME}' !!!\n"
+
 print_result() {
     if [ $1 -eq 0 ]; then
         echo -e "${GREEN}OK${NC} - $2"
@@ -12,36 +16,40 @@ print_result() {
     fi
 }
 
-echo "Verificando se o SSH está escutando na porta 4242..."
-ss -tuln | grep -q ':4242'
-print_result $? "SSH escutando na porta 4242"
+echo "Username from .env file: $SSH_USER"
 
-echo "Verificando configurações de segurança do SSH..."
+# Rest of your checks...
+echo "Checking if SSH is listening on port 4242..."
+ss -tuln | grep -q ':4242'
+print_result $? "SSH listening on port 4242"
+
+# SSH security configuration checks...
+echo "Checking SSH security configurations..."
 grep -Eq "^PermitRootLogin no" /etc/ssh/sshd_config
-print_result $? "PermitRootLogin desabilitado"
+print_result $? "PermitRootLogin disabled"
 
 grep -Eq "^PasswordAuthentication yes" /etc/ssh/sshd_config
-print_result $? "PasswordAuthentication habilitado"
+print_result $? "PasswordAuthentication enabled"
 
 grep -Eq "^ChallengeResponseAuthentication no" /etc/ssh/sshd_config
-print_result $? "ChallengeResponseAuthentication desabilitado"
+print_result $? "ChallengeResponseAuthentication disabled"
 
 grep -Eq "^UsePAM yes" /etc/ssh/sshd_config
-print_result $? "UsePAM habilitado"
+print_result $? "UsePAM enabled"
 
 grep -Eq "^X11Forwarding no" /etc/ssh/sshd_config
-print_result $? "X11Forwarding desabilitado"
+print_result $? "X11Forwarding disabled"
 
-echo "Testando a conexão SSH via Tor..."
+echo "Testing SSH connection via Tor..."
 ONION_ADDRESS=$(cat /var/lib/tor/hidden_service/hostname)
 if [ -z "$ONION_ADDRESS" ]; then
-    echo -e "${RED}KO${NC} - Não foi possível obter o endereço .onion"
+    echo -e "${RED}KO${NC} - Could not obtain .onion address"
     exit 1
 else
-    echo "Obtido endereço .onion: $ONION_ADDRESS"
+    echo "Obtained .onion address: $ONION_ADDRESS"
 fi
 
-echo "Testando o prompt interativo SSH via Tor..."
-ssh -o StrictHostKeyChecking=no -o ProxyCommand="nc -x 127.0.0.1:9050 %h %p" -p 4242 caalbert@$ONION_ADDRESS
+echo "Testing interactive SSH prompt via Tor..."
+ssh -o StrictHostKeyChecking=no -o ProxyCommand="nc -x 127.0.0.1:9050 %h %p" -p 4242 "${USERNAME}@${ONION_ADDRESS}"
 
-echo "Testes concluídos."
+echo "Tests completed."
